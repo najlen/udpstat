@@ -9,7 +9,6 @@ from re import search
 from optparse import OptionParser
 from datetime import datetime
 from sys import exit
-import re
 
 
 def signal_handler(signal, frame):
@@ -80,7 +79,8 @@ if len(args) < 1:
     exit(1)
 
 hexport = "%x" % int(args[0])
-print "Start collecting RX and TX queue statistics information and dropped packages result for port (%s)" % args[0]
+hexport = hexport.upper()
+print "Start collecting RX and TX queue statistics information and dropped packages result for port (%s), hex (%s)" % (args[0], hexport)
 
 if opts.filename:
     ofile = open(opts.filename, 'wb')
@@ -96,7 +96,8 @@ while stime >= atime - opts.runtime:
     lines = f.readlines()
     f.close()
     for item in lines:
-        if search(hexport, item, re.IGNORECASE) != None:
+        item = item.upper()
+        if search(hexport, item) != None:
             buffers = item.strip().split() # 0:sl, 1:local_address, 2:rem_address, 3:st, 4:tx_queue rx_queue, 5:tr tm->when retrnsmt
                                            # 6:retrnsmt, 7:uid, 8:timeout, 9:inode, 10:ref, 11:pointer, 12:drops
             sl, la, ra, st, tx_rx, tr, retrnsmt, uid, timeout, inode, ref, pointer, drops = buffers
